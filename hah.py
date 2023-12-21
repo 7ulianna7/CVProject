@@ -1,1 +1,2 @@
-print(123456)
+print(12345)
+print("Lol, kek")
