@@ -10,6 +10,10 @@ t = False
 o = False
 
 
+def vec(a, b):
+  return a[0] * b[1] - a[1] * b[0]
+
+
 def get_points(landmark, shape):
   points = []
   for mark in landmark:
@@ -63,14 +67,15 @@ def L(landmark, shape, flippedRGB):
   p = points(landmark, shape)
   ideal = [0, -100]
   ideal = np.array(ideal)
-  #print(p[3].dot(p[4]) / (vsize(p[3]) * vsize(p[4])))
   if ideal.dot(p[2]) / (vsize(ideal) * vsize(p[2])) > -0.97:
     loc = 0
   elif p[2].dot(p[3]) / (vsize(p[2]) * vsize(p[3])) > 0:
     loc = 0
-  elif abs(p[1].dot(p[2])) / (vsize(p[1]) * vsize(p[2])) > 0.98:
+  elif abs(p[1].dot(p[2])) / (vsize(p[1]) * vsize(p[2])) < 0.994:
     loc = 0
   elif p[3].dot(p[4]) / (vsize(p[3]) * vsize(p[4])) < 0.98:
+    loc = 0
+  elif vec(p[1], p[0]) / (vsize(p[1]) * vsize(p[0])) > 0:
     loc = 0
   else:
     print("Л")
@@ -78,6 +83,30 @@ def L(landmark, shape, flippedRGB):
     l = True
     e = False
     t = False
+    o = False
+
+
+def T(landmark, shape, flippedRGB):
+  global l, e, t, o, v
+  p = points(landmark, shape)
+  ideal = [0, -100]
+  ideal = np.array(ideal)
+  if ideal.dot(p[2]) / (vsize(ideal) * vsize(p[2])) > -0.97:
+    loc = 0
+  elif abs(p[1].dot(p[2])) / (vsize(p[1]) * vsize(p[2])) > 0.994:
+    loc = 0
+  elif abs(p[2].dot(p[3])) / (vsize(p[2]) * vsize(p[3])) > 0.994:
+    loc = 0
+  elif p[3].dot(p[4]) / (vsize(p[3]) * vsize(p[4])) > 0:
+    loc = 0
+  elif vec(p[1], p[0]) / (vsize(p[1]) * vsize(p[0])) > 0:
+    loc = 0
+  else:
+    print("Т")
+    v = False
+    l = False
+    e = False
+    t = True
     o = False
 
 
@@ -119,6 +148,8 @@ while (cap.isOpened()):
       V(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
     if l == False:
       L(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
+    if t == False:
+      T(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
 
   # переводим в BGR и показываем результат
   res_image = cv2.cvtColor(flippedRGB, cv2.COLOR_RGB2BGR)
