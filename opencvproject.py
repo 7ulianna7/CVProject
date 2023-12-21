@@ -47,14 +47,14 @@ def V(landmark, shape, flippedRGB):
   ideal = np.array(ideal)
   if ideal.dot(p[2]) / (vsize(ideal) * vsize(p[2])) < 0.97:
     loc = 0
-  elif abs(p[1].dot(p[2])) / (vsize(p[1]) * vsize(p[2])) < 0.98:
+  elif p[1].dot(p[2]) / (vsize(p[1]) * vsize(p[2])) < 0.98:
     loc = 0
   elif abs(p[2].dot(p[3])) / (vsize(p[2]) * vsize(p[3])) < 0.98:
     loc = 0
   elif abs(p[3].dot(p[4])) / (vsize(p[3]) * vsize(p[4])) < 0.98:
     loc = 0
   else:
-    print("В")
+    print("В", end="")
     v = True
     l = False
     e = False
@@ -78,7 +78,7 @@ def L(landmark, shape, flippedRGB):
   elif vec(p[1], p[0]) / (vsize(p[1]) * vsize(p[0])) > 0:
     loc = 0
   else:
-    print("Л")
+    print("Л", end="")
     v = False
     l = True
     e = False
@@ -102,7 +102,7 @@ def T(landmark, shape, flippedRGB):
   elif vec(p[1], p[0]) / (vsize(p[1]) * vsize(p[0])) > 0:
     loc = 0
   else:
-    print("Т")
+    print("Т", end="")
     v = False
     l = False
     e = False
@@ -130,13 +130,43 @@ def E(landmark, shape, flippedRGB):
   elif p[3].dot(p[4]) / (vsize(p[3]) * vsize(p[4])) < 0.99:
     loc = 0
   else:
-    print("Е")
+    print("Е", end="")
     v = False
     l = False
     e = True
     t = False
     o = False
 
+
+def O(landmark, shape, flippedRGB):
+  a = get_points(landmark, shape)
+  global l, e, t, o, v
+  p = points(landmark, shape)
+  ideal = [0, -100]
+  ideal = np.array(ideal)
+  sp = [a[6][0] - a[5][0], a[6][1] - a[5][1]]
+  sp = np.array(sp)
+  if ideal.dot(p[4]) / (vsize(ideal) * vsize(p[4])) < 0.97:
+    loc = 0
+  elif sp.dot(p[1]) / (vsize(sp) * vsize(p[1])) > 0.99:
+    loc = 0
+  elif p[1].dot(p[2]) / (vsize(p[1]) * vsize(p[2])) > 0.94:
+    loc = 0
+  elif p[2].dot(p[3]) / (vsize(p[2]) * vsize(p[3])) < 0.99:
+    loc = 0
+  elif p[3].dot(p[4]) / (vsize(p[3]) * vsize(p[4])) < 0.99:
+    loc = 0
+  else:
+    print("О", end="")
+    v = False
+    l = False
+    e = False
+    t = False
+    o = True
+
+
+#def space(landmark, shape, flippedRGB):
+#    a = get_points(landmark, shape)
 
 #создаем детектор
 handsDetector = mp.solutions.hands.Hands()
@@ -180,6 +210,8 @@ while (cap.isOpened()):
       T(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
     if e == False:
       E(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
+    if o == False:
+      O(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
 
   # переводим в BGR и показываем результат
   res_image = cv2.cvtColor(flippedRGB, cv2.COLOR_RGB2BGR)
