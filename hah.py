@@ -1,2 +1,2 @@
 print(12345)
-print("Lol, kek")
+print("Lol")
