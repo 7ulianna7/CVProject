@@ -69,7 +69,7 @@ def L(landmark, shape, flippedRGB):
   ideal = np.array(ideal)
   if ideal.dot(p[2]) / (vsize(ideal) * vsize(p[2])) > -0.97:
     loc = 0
-  elif p[2].dot(p[3]) / (vsize(p[2]) * vsize(p[3])) > 0:
+  elif p[2].dot(p[3]) / (vsize(p[2]) * vsize(p[3])) < 0.99:
     loc = 0
   elif abs(p[1].dot(p[2])) / (vsize(p[1]) * vsize(p[2])) < 0.994:
     loc = 0
@@ -107,6 +107,34 @@ def T(landmark, shape, flippedRGB):
     l = False
     e = False
     t = True
+    o = False
+
+
+def E(landmark, shape, flippedRGB):
+  a = get_points(landmark, shape)
+  global l, e, t, o, v
+  p = points(landmark, shape)
+  ideal = [0, -100]
+  ideal = np.array(ideal)
+  sp = [a[6][0] - a[5][0], a[6][1] - a[5][1]]
+  sp = np.array(sp)
+  id1 = [a[9][0] - a[0][0], a[9][1] - a[0][1]]
+  if 0.94 > ideal.dot(id1) / (vsize(ideal) * vsize(id1)) > 0.75:
+    loc = 0
+  elif sp.dot(p[1]) / (vsize(sp) * vsize(p[1])) > 0.99:
+    loc = 0
+  elif p[1].dot(p[2]) / (vsize(p[1]) * vsize(p[2])) < 0.99:
+    loc = 0
+  elif p[2].dot(p[3]) / (vsize(p[2]) * vsize(p[3])) < 0.99:
+    loc = 0
+  elif p[3].dot(p[4]) / (vsize(p[3]) * vsize(p[4])) < 0.99:
+    loc = 0
+  else:
+    print("Е")
+    v = False
+    l = False
+    e = True
+    t = False
     o = False
 
 
@@ -150,6 +178,8 @@ while (cap.isOpened()):
       L(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
     if t == False:
       T(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
+    if e == False:
+      E(results.multi_hand_landmarks[0].landmark, shape, flippedRGB)
 
   # переводим в BGR и показываем результат
   res_image = cv2.cvtColor(flippedRGB, cv2.COLOR_RGB2BGR)
